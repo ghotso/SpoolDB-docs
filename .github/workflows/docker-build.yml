@@ -62,12 +62,10 @@ jobs:
           cache-to: type=gha,mode=max
 
   deploy:
-    # läuft nur, wenn build-and-push erfolgreich war
     needs: build-and-push
     runs-on: ubuntu-latest
     permissions:
       contents: read
-
 
     steps:
       - name: Install Tailscale
@@ -79,9 +77,11 @@ jobs:
         env:
           TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
         run: |
-          sudo tailscaled --state=/var/lib/tailscale/tailscaled.state --socket=/var/run/tailscale/tailscaled.sock &
-          sleep 5
-          sudo tailscale up --authkey=${TAILSCALE_AUTHKEY} --hostname=gh-actions-runner --ssh=false
+          # tailscaled läuft nach der Installation schon als Service,
+          # deshalb hier nur noch "tailscale up" aufrufen.
+          sudo tailscale up --authkey=${TAILSCALE_AUTHKEY} \
+            --hostname=gh-actions-runner \
+            --ssh=false
 
       - name: Configure SSH key
         run: |
@@ -92,20 +92,17 @@ jobs:
 
       - name: Deploy to Unraid via SSH over Tailscale
         env:
-          UNRAID_HOST: ${{ secrets.UNRAID_TS_HOST }}      # z.B. unraid.ts.net
+          UNRAID_HOST: ${{ secrets.UNRAID_TS_HOST }}      # z.B. unraid.ts.net oder 100.x.x.x
           UNRAID_SSH_USER: ${{ secrets.UNRAID_SSH_USER }} # z.B. root
           REGISTRY: ${{ env.REGISTRY }}
           IMAGE_NAME: ${{ env.IMAGE_NAME }}
         run: |
           ssh ${UNRAID_SSH_USER}@${UNRAID_HOST} << EOF
-          # Neues Image holen
           docker pull ${REGISTRY}/${IMAGE_NAME}:latest
 
-          # Container stoppen & entfernen (Fehler ignorieren, falls er noch nicht existiert)
           docker stop spooldb-docs || true
           docker rm spooldb-docs || true
 
-          # Container neu starten – Ports/Volumes ggf. anpassen
           docker run -d --name spooldb-docs \
             --restart unless-stopped \
             -p 5275:80 \
