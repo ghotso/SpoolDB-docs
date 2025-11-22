@@ -81,7 +81,7 @@ jobs:
         run: |
           sudo tailscaled --state=/var/lib/tailscale/tailscaled.state --socket=/var/run/tailscale/tailscaled.sock &
           sleep 5
-          sudo tailscale up --authkey=${TAILSCALE_AUTHKEY} --hostname=gh-actions-runner
+          sudo tailscale up --authkey=${TAILSCALE_AUTHKEY} --hostname=gh-actions-runner --ssh=false
 
       - name: Configure SSH key
         run: |
