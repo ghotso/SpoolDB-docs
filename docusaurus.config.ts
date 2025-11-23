@@ -65,7 +65,7 @@ const config: Config = {
       title: 'SpoolDB',
       logo: {
         alt: 'SpoolDB Logo',
-        src: 'img/logo.svg',
+        src: 'img/SpoolDB.png',
       },
       items: [
         {
