@@ -22,7 +22,7 @@ Parse a G-code file and return metadata with suggested filament matches.
 **Content-Type:** `multipart/form-data`
 
 **Request Body:**
-- `file` (file, required): G-code file to parse (max 10MB)
+- `file` (file, required): G-code file to parse (max 100MB)
 
 **Response:** `200 OK`
 ```json
@@ -49,11 +49,11 @@ Parse a G-code file and return metadata with suggested filament matches.
 ```
 
 **Error Responses:**
-- `400`: No file uploaded, file too large (>10MB), or parsing error
+- `400`: No file uploaded, file too large (>100MB), or parsing error
 - `500`: Server error
 
 **Notes:**
-- File size limit: 10MB
+- File size limit: 100MB
 - Only `.gcode` files are accepted
 - The API attempts to match filaments based on material and color from the G-code
 - Suggested filaments are sorted by remaining weight (descending)
@@ -66,7 +66,7 @@ Upload and parse a G-code file to create a consumption entry.
 **Content-Type:** `multipart/form-data`
 
 **Request Body:**
-- `file` (file, required): G-code file to upload (max 10MB)
+- `file` (file, required): G-code file to upload (max 100MB)
 - `filament_id` (integer, required): Filament ID to associate consumption with
 - `type` (string, optional): Consumption type (`success`, `failed`, `test`, `manual`). Default: `success`
 
@@ -101,7 +101,7 @@ Upload and parse a G-code file to create a consumption entry.
 - `500`: Server error
 
 **Notes:**
-- File size limit: 10MB
+- File size limit: 100MB
 - Only `.gcode` files are accepted
 - The API checks that the filament has sufficient remaining weight
 - If `usedFilamentG` is not available in the G-code, it estimates from `usedFilamentM` using standard PLA density (1.24 g/cm³) and 1.75mm diameter
